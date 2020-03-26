@@ -1,11 +1,11 @@
 import pyodbc
 from contextlib import contextmanager
 import os
-import webbrowser
 from jinja2 import Environment, FileSystemLoader
 import time
 import datetime
-from subprocess import check_output
+from tabulate import tabulate
+from .eltSnap_Project_HTML import render
 
 def create_html(server_name, database_name, proj_name, command_type ="regular"):
     @contextmanager
@@ -19,25 +19,31 @@ def create_html(server_name, database_name, proj_name, command_type ="regular"):
         except Exception as e:
             print(e)
 
+    try:
+        with connection() as conn:
+            curr = conn.cursor()
+            #Create new Project
+            if command_type == "regular":
+                new_project = f"SELECT TOP 20 [project_id],[project_name],[build_template_group] FROM [elt].project order by [project_name] "
+            elif command_type == "connection":
+                new_project = f"SELECT TOP (20) [connection_name],[server_name],[database_name],[provider],[custom_connect_string] FROM [elt].[oledb_connection] order by [connection_name] desc"
+            elif command_type == "data_flow":
+                new_project = f"SELECT TOP (20) * FROM [elt].[package_config_data_flow]"
+            elif command_type == "foreach_data_flow":
+                new_project = f"SELECT TOP (20) * FROM [elt].[package_config_foreach_data_flow]"
+            elif command_type == "execute_process":
+                new_project = f"SELECT TOP (20) * FROM [elt].[package_config_execute_process]"
+            elif command_type == "execute_sql":
+                new_project = f"SELECT TOP (20) * FROM [elt].[package_config_execute_sql]"
+            elif command_type == "foreach_execute_sql":
+                new_project = f"SELECT TOP (20) * FROM [elt].[package_config_foreach_execute_sql]"
 
-    with connection() as conn:
-        curr = conn.cursor()
-        #Create new Project
-        if command_type == "regular":
-            new_project = f"SELECT TOP 20 [project_id],[project_name],[build_template_group] FROM [elt].project order by [project_name] "
-        elif command_type == "connection":
-            new_project = f"SELECT TOP (20) [project_id],[connection_name] FROM [elt].[project_oledb_connection] order by connection_name desc"
-        curr.execute(new_project)
-        resultSet_ = curr.fetchall()
-        project_parameters = resultSet_
-
-    root = os.path.dirname(os.path.abspath(__file__))
-    templates_dir = os.path.join(root, 'html')
-    env = Environment(loader=FileSystemLoader(templates_dir))
-    if command_type == "regular":
-        template = env.get_template('create_project_template.html')
-    else:
-        template = env.get_template('create_connection_template.html')
+            curr.execute(new_project)
+            resultSet_ = curr.fetchall()
+            columns = [col[0] for col in curr.description]
+            project_parameters = resultSet_
+    except Exception as e:
+        print(e)
 
     # path = check_output(["where", "azuredatastudio"]).decode("utf-8")
     # path_to_azuredatastudio = path.split('\n')[0].strip('\r')
@@ -88,21 +94,12 @@ def create_html(server_name, database_name, proj_name, command_type ="regular"):
                 print(e)
 
     if os.path.exists(PATH):
-        filename = os.path.join(PATH, 'eltSnap_Project_HTML.html')
+
+        render(server_name, database_name, PATH)
+
     else:
         raise ("Path is wrong ! Check your azuredatastudio installaton !")
 
-    try:
-        with open(filename, 'w') as writer:
-            writer.write(template.render(
-                h1="eltSnap Create Project",
-                published=datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S'),
-                project_name=proj_name,
-                project_package_set=project_parameters,
-                ))
-    except Exception as e:
-        print(e)
 
     time.sleep(0.1)
-    webbrowser.open(filename, new=2)
-    print(f'The HTML file destination is on the location : {filename}')
+    print(tabulate(project_parameters, headers=columns))

@@ -1,7 +1,10 @@
 import pyodbc
 from contextlib import contextmanager
 from .create import create_html
+import webbrowser
 
+def open_webbrowser(filename):
+    url = webbrowser.open(filename, new=2)
 
 def create_project(server_name, database_name, GIVE_YOUR_PROJECT_A_NAME, SELECT_A_TEMPLATE_GROUP):
     if GIVE_YOUR_PROJECT_A_NAME == 'project name':
@@ -67,16 +70,14 @@ def create_data_connection(server_name, database_name, connection_name_to_save, 
             curr.execute(CreateProjectCommand, params, )
             val = curr.fetchall()[0][0]
     except pyodbc.Error as e:
-        pass
-
-    if val > 0:
-        print(f"Succesfully created project with id {val} !")
-        create_html(server_name, database_name, connection_name_to_save, command_type="connection")
-    else:
-        print(f"The project with such name already exists Try again!")
+        print("Something got wrong")
         return
 
-def clone_data_connection(server_name, database_name, connection_name_to_save, old_connection_name, project_name):
+    if val:
+        print(f"Succesfully created data connection {connection_name_to_save}!")
+        create_html(server_name, database_name, connection_name_to_save, command_type="connection")
+
+def clone_data_connection(server_name, database_name, old_connection_name, connection_name_to_save, project_name):
     if project_name is 'enter project name (optional)':
         project_name = ''
 
@@ -104,7 +105,7 @@ def clone_data_connection(server_name, database_name, connection_name_to_save, o
         pass
 
     if val > 0:
-        print(f"Succesfully created project with id {val} !")
+        print(f"Succesfully cloned data connection with id {val} !")
         create_html(server_name, database_name, connection_name_to_save, command_type="connection")
     else:
         print(f"Error! Check your input parameters !")
@@ -168,7 +169,7 @@ def delete_project(server_name, database_name, Select_Project):
 
 
     if val >0:
-        print(f"Succesfully created project with id {val} !")
+        print(f"Succesfully deleted project with id {val} !")
         create_html(server_name, database_name, Select_Project)
 
 

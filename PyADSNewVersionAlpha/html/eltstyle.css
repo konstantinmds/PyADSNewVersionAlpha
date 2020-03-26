@@ -109,27 +109,32 @@ background-color : #26a0da !important;
     padding: 10px;
 }
 
-table {
-  width: 80%;
-  margin: 20px auto;
-  table-layout: auto;
+#tabela{
+width: 20% !important
+
 }
 
-.fixed {
-  table-layout: fixed;
+#tabela1{
+width: 20% !important
 }
 
-table,
-td,
-th {
-  border-collapse: collapse;
+#tabela2{
+width: 20% !important
+
 }
 
-th,
-td {
-  padding: 10px;
-  border: solid 1px;
-  text-align: center;
+#tabela3{
+width: 20% !important
+}
+
+#tabela4{
+width: 20% !important;
+margin-left: 25px;
+}
+
+
+#tabela5{
+width: 20% !important
 }
 
 
@@ -137,7 +142,8 @@ td {
     padding: 10px;
     font-size: 1.1em;
     display: block;
-    background-color: #52b947 !important;
+        background-color: #52b947 !important;
+
 }
 
 #sidebar ul li a:hover {
@@ -149,6 +155,7 @@ td {
 a[aria-expanded="true"] {
     color: #fff;
     background: #52b947 !important;
+
 }
 
 #logo_pic {
@@ -160,6 +167,15 @@ a[data-toggle="collapse"] {
     position: relative;
 }
 
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+        background: #52b947;
+
+    transform: translateY(-50%);
+}
 
 ul ul a {
     font-size: 0.9em !important;
@@ -190,7 +206,7 @@ a.article:hover {
 }
 
 .table td, .table th{
-    padding: 0.75rem;
+padding: 0.75rem;
     vertical-align: top;
     line-height: normal;
     white-space: nowrap;

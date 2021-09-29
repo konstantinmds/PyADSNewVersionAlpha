@@ -1,10 +1,11 @@
 import setuptools
 
 setuptools.setup(
-    name='eltsnap-Python',
+    name='eltsnap',
     url='https://github.com/Jim-BITracks/eltSnap-Python',
     author='Jim Miller',
-    version='1.1.6',
+    version='0.1.1',
+    license='MIT license',
     description='Third version test',
     packages=['PyADSNewVersionAlpha'],
     package_dir={'PyADSNewVersionAlpha': 'PyADSNewVersionAlpha'},

@@ -1,2 +1,6 @@
 venv
 html/bootstrap-4.3.1-dist
+eltsnap.egg-info
+build
+dist
+.idea
